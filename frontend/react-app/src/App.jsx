@@ -18,6 +18,7 @@ function getDeadlineText(dateValue) {
 
 function App() {
   const [assignments, setAssignments] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [title, setTitle] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState("Should-Do");
@@ -202,12 +203,18 @@ function App() {
     .slice(0, 3);
 
   const filteredAssignments = assignments.filter((assignment) => {
-    if (statusFilter === "All") return true;
-    return (assignment.status || "Pending") === statusFilter;
-  });
+  const matchesStatus =
+    statusFilter === "All" ||
+    (assignment.status || "Pending") === statusFilter;
 
-  const nextDeadline = upcomingAssignments[0];
+  const matchesSearch = (assignment.title || "")
+    .toLowerCase()
+    .includes(searchTerm.trim().toLowerCase());
 
+  return matchesStatus && matchesSearch;
+});
+
+const nextDeadline = upcomingAssignments[0];
   return (
     <div className="app-shell" id="dashboard">
       <aside className="sidebar">
@@ -378,10 +385,17 @@ function App() {
             
           
           </form>
-
+            <input
+  className="assignment-search"
+  type="search"
+  placeholder="Search assignments..."
+  value={searchTerm}
+  onChange={(event) => setSearchTerm(event.target.value)}
+/>
           {filteredAssignments.length === 0 ? (
             <p className="empty-state">No assignments match this filter.</p>
           ) : (
+            
            <div className="priority-board">
   {["Must-Do", "Should-Do", "Can Wait"].map((priorityName) => {
     const columnAssignments = filteredAssignments.filter(

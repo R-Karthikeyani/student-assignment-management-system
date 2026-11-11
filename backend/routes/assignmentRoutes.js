@@ -12,6 +12,7 @@ router.get("/", async (request, response) => {
   }
 });
 
+
 router.post("/", async (request, response) => {
   try {
     const assignment = new Assignment({
